@@ -94,7 +94,7 @@
     .result-text {
       font-size: 34px;
       font-weight: 600;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
 
     .money {
@@ -102,29 +102,22 @@
       font-weight: 700;
     }
 
+    .money-green {
+      color: #22c55e;
+      font-weight: 700;
+    }
+
     .recovery {
       margin-top: 40px;
-      max-width: 720px;
+      max-width: 820px;
       margin-left: auto;
       margin-right: auto;
-    }
-
-    .recovery h2 {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .recovery p {
-      font-size: 16px;
-      opacity: 0.9;
-      margin-bottom: 24px;
     }
 
     .secondary {
       background: transparent;
       border: 2px solid rgba(255,255,255,0.35);
-      margin-top: 10px;
+      margin-top: 30px;
     }
 
     .secondary:hover {
@@ -171,6 +164,8 @@
 <!-- RESULT STATE -->
 <div class="hero hidden" id="resultState">
   <div class="content">
+
+    <!-- LOSS -->
     <div class="result-text">
       You’re losing approximately
       <span class="money" id="monthlyLoss"></span>
@@ -181,13 +176,21 @@
       per year.
     </div>
 
-    <!-- RECOVERY CONTINUATION -->
+    <!-- RECOVERY -->
     <div class="recovery">
-      <h2>How much of this loss can actually be recovered?</h2>
-      <p>
-        Up to <span class="money" id="recoverableAmount"></span> per year of this loss
-        can typically be recovered with our automated dispute management.
-      </p>
+      <div class="result-text">
+        How much of this loss can actually be recovered?
+        <br /><br />
+        You could recover approximately
+        <span class="money-green" id="monthlyRecoverable"></span>
+        per month,
+        <br />
+        which equates to
+        <span class="money-green" id="yearlyRecoverable"></span>
+        per year,
+        <br />
+        with our automated dispute management.
+      </div>
 
       <a href="https://2bv4o0.share-eu1.hsforms.com/2Qx1AGjvpRbGlg81NbZSLzw"
          target="_blank"
@@ -200,9 +203,7 @@
       Estimates are directional and based on stated assumptions. Actual results vary by operation and platform.
     </div>
 
-    <button class="secondary" style="margin-top:30px;" onclick="reset()">
-      Calculate again
-    </button>
+    <button class="secondary" onclick="reset()">Calculate again</button>
   </div>
 </div>
 
@@ -215,7 +216,7 @@
     if (!outlets || !totalOrdersPerDay || !aov) return;
 
     const DAYS = 365;
-    const DISPUTE_RATE = 0.040;
+    const DISPUTE_RATE = 0.045;
     const COMMISSION = 0.30;
     const RECOVERY_RATE = 0.90;
 
@@ -226,7 +227,9 @@
     const totalLoss = refundedValue + (refundedValue * COMMISSION);
 
     const monthlyLoss = totalLoss / 12;
+
     const recoverableAnnual = totalLoss * RECOVERY_RATE;
+    const recoverableMonthly = recoverableAnnual / 12;
 
     document.getElementById("monthlyLoss").innerText =
       "£" + monthlyLoss.toFixed(0);
@@ -234,7 +237,10 @@
     document.getElementById("yearlyLoss").innerText =
       "£" + totalLoss.toFixed(0);
 
-    document.getElementById("recoverableAmount").innerText =
+    document.getElementById("monthlyRecoverable").innerText =
+      "£" + recoverableMonthly.toFixed(0);
+
+    document.getElementById("yearlyRecoverable").innerText =
       "£" + recoverableAnnual.toFixed(0);
 
     document.getElementById("inputState").classList.add("hidden");
