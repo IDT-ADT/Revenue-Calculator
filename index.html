@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Dispute Impact Calculator</title>
+  <title>Delivery Dispute Cost Calculator</title>
 
+  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -16,30 +17,31 @@
 
     .hero {
       min-height: 100vh;
-      background: linear-gradient(180deg, #163fa3 0%, #0a2b6b 100%);
+      background: linear-gradient(180deg, #143a9c 0%, #0a255c 100%);
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 40px;
       box-sizing: border-box;
-    }
-
-    .content {
-      max-width: 1100px;
-      width: 100%;
       text-align: center;
     }
 
-    h1 {
-      font-size: 44px;
-      margin-bottom: 10px;
+    .content {
+      max-width: 1200px;
+      width: 100%;
     }
 
-    p {
+    h1 {
+      font-size: 46px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .sub {
       font-size: 20px;
       opacity: 0.9;
-      margin-bottom: 40px;
+      margin-bottom: 48px;
     }
 
     .inputs {
@@ -49,41 +51,71 @@
       flex-wrap: wrap;
     }
 
+    .field {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .field label {
+      font-size: 14px;
+      margin-bottom: 6px;
+      opacity: 0.9;
+    }
+
     input {
       padding: 18px 20px;
-      border-radius: 12px;
+      border-radius: 14px;
       border: none;
       font-size: 18px;
       width: 220px;
     }
 
     button {
-      padding: 18px 28px;
-      border-radius: 14px;
+      padding: 18px 30px;
+      border-radius: 16px;
       border: none;
       font-size: 18px;
       font-weight: 600;
-      background: #3b6df6;
+      background: #3f6df6;
       color: white;
       cursor: pointer;
+      align-self: flex-end;
     }
 
     button:hover {
-      background: #315fd6;
+      background: #345ed8;
     }
 
-    .result {
-      font-size: 36px;
-      font-weight: 700;
+    .hidden {
+      display: none;
+    }
+
+    .result-text {
+      font-size: 34px;
+      font-weight: 600;
       margin-bottom: 30px;
     }
 
     .money {
       color: #ff4d4f;
+      font-weight: 700;
     }
 
-    .hidden {
-      display: none;
+    .secondary {
+      background: transparent;
+      border: 2px solid rgba(255,255,255,0.3);
+      margin-top: 20px;
+    }
+
+    .secondary:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .disclaimer {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-top: 40px;
     }
   </style>
 </head>
@@ -93,13 +125,26 @@
 <!-- INPUT STATE -->
 <div class="hero" id="inputState">
   <div class="content">
-    <h1>See How Much You’re Losing to Delivery Disputes</h1>
-    <p>Enter your details to estimate recoverable revenue and wasted labour.</p>
+    <h1>What delivery disputes are really costing your restaurants</h1>
+    <div class="sub">Tailored to your order volume and average order value.</div>
 
     <div class="inputs">
-      <input id="orders" type="number" placeholder="Orders per day">
-      <input id="aov" type="number" placeholder="Avg order value (£)">
-      <button onclick="calculate()">Calculate impact</button>
+      <div class="field">
+        <label>Number of outlets</label>
+        <input id="outlets" type="number" min="1" placeholder="e.g. 10">
+      </div>
+
+      <div class="field">
+        <label>Total daily orders (all outlets)</label>
+        <input id="orders" type="number" min="1" placeholder="e.g. 500">
+      </div>
+
+      <div class="field">
+        <label>Average order value (£)</label>
+        <input id="aov" type="number" min="1" placeholder="e.g. 25">
+      </div>
+
+      <button onclick="calculate()">Calculate cost</button>
     </div>
   </div>
 </div>
@@ -107,30 +152,58 @@
 <!-- RESULT STATE -->
 <div class="hero hidden" id="resultState">
   <div class="content">
-    <div class="result">
+    <div class="result-text">
       You’re losing approximately
-      <span class="money" id="resultValue"></span>
+      <span class="money" id="monthlyLoss"></span>
+      per month,
+      <br />
+      which equates to
+      <span class="money" id="yearlyLoss"></span>
       per year.
     </div>
 
-    <button onclick="reset()">Calculate again</button>
+    <button class="secondary" onclick="reset()">Calculate again</button>
+
+    <div class="disclaimer">
+      Estimates are directional and based on stated assumptions. Actual results vary by operation and platform.
+    </div>
   </div>
 </div>
 
 <script>
   function calculate() {
-    const orders = Number(document.getElementById("orders").value);
+    const outlets = Number(document.getElementById("outlets").value);
+    const totalOrdersPerDay = Number(document.getElementById("orders").value);
     const aov = Number(document.getElementById("aov").value);
+
+    if (!outlets || !totalOrdersPerDay || !aov) return;
 
     const DAYS = 365;
     const DISPUTE_RATE = 0.045;
     const COMMISSION = 0.30;
 
-    const disputedOrders = orders * DAYS * DISPUTE_RATE;
-    const refunded = disputedOrders * aov;
-    const totalLoss = refunded + (refunded * COMMISSION);
+    // Orders per outlet (used explicitly)
+    const ordersPerOutletPerDay = totalOrdersPerDay / outlets;
 
-    document.getElementById("resultValue").innerText =
+    const annualOrders =
+      ordersPerOutletPerDay * outlets * DAYS;
+
+    const disputedOrders =
+      annualOrders * DISPUTE_RATE;
+
+    const refundedValue =
+      disputedOrders * aov;
+
+    const totalLoss =
+      refundedValue + (refundedValue * COMMISSION);
+
+    const monthlyLoss =
+      totalLoss / 12;
+
+    document.getElementById("monthlyLoss").innerText =
+      "£" + monthlyLoss.toFixed(0);
+
+    document.getElementById("yearlyLoss").innerText =
       "£" + totalLoss.toFixed(0);
 
     document.getElementById("inputState").classList.add("hidden");
