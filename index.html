@@ -112,16 +112,21 @@
       font-weight: 700;
     }
 
-    .money-green {
-      color: #22c55e;
-      font-weight: 700;
-    }
-
     .recovery {
-      margin-top: 70px; /* extra breathing space */
+      margin-top: 70px;
       max-width: 820px;
       margin-left: auto;
       margin-right: auto;
+    }
+
+    .recovery p {
+      font-size: 20px;
+      opacity: 0.9;
+      margin-bottom: 28px;
+    }
+
+    .highlight {
+      font-weight: 700;
     }
 
     .disclaimer {
@@ -165,7 +170,7 @@
 <div class="hero hidden" id="resultState">
   <div class="content">
 
-    <!-- LOSS (single line flow) -->
+    <!-- LOSS -->
     <div class="result-text">
       You’re losing approximately
       <span class="money" id="monthlyLoss"></span>
@@ -174,22 +179,19 @@
       per year.
     </div>
 
-    <!-- CALCULATE AGAIN (moved up) -->
+    <!-- CALCULATE AGAIN -->
     <button class="secondary" onclick="reset()">Calculate again</button>
 
-    <!-- RECOVERY -->
+    <!-- RECOVERY (NO £ NUMBERS) -->
     <div class="recovery">
       <div class="result-text">
         How much of this loss can actually be recovered?
-        <br /><br />
-        You could recover approximately
-        <span class="money-green" id="monthlyRecoverable"></span>
-        per month, which equates to
-        <span class="money-green" id="yearlyRecoverable"></span>
-        per year,
-        <br />
-        with our Automated Dispute Management.
       </div>
+
+      <p>
+        Up to <span class="highlight">90%</span> of disputed losses can typically be recovered
+        with <span class="highlight">our automated dispute management</span>.
+      </p>
 
       <a href="https://2bv4o0.share-eu1.hsforms.com/2Qx1AGjvpRbGlg81NbZSLzw"
          target="_blank"
@@ -207,16 +209,14 @@
 
 <script>
   function calculate() {
-    const outlets = Number(document.getElementById("outlets").value);
     const totalOrdersPerDay = Number(document.getElementById("orders").value);
     const aov = Number(document.getElementById("aov").value);
 
-    if (!outlets || !totalOrdersPerDay || !aov) return;
+    if (!totalOrdersPerDay || !aov) return;
 
     const DAYS = 365;
     const DISPUTE_RATE = 0.045;
     const COMMISSION = 0.30;
-    const RECOVERY_RATE = 0.90;
 
     const annualOrders = totalOrdersPerDay * DAYS;
     const disputedOrders = annualOrders * DISPUTE_RATE;
@@ -226,20 +226,11 @@
 
     const monthlyLoss = totalLoss / 12;
 
-    const recoverableAnnual = totalLoss * RECOVERY_RATE;
-    const recoverableMonthly = recoverableAnnual / 12;
-
     document.getElementById("monthlyLoss").innerText =
       "£" + monthlyLoss.toFixed(0);
 
     document.getElementById("yearlyLoss").innerText =
       "£" + totalLoss.toFixed(0);
-
-    document.getElementById("monthlyRecoverable").innerText =
-      "£" + recoverableMonthly.toFixed(0);
-
-    document.getElementById("yearlyRecoverable").innerText =
-      "£" + recoverableAnnual.toFixed(0);
 
     document.getElementById("inputState").classList.add("hidden");
     document.getElementById("resultState").classList.remove("hidden");
