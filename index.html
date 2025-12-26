@@ -2,186 +2,146 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Delivery Dispute Impact Calculator</title>
+  <title>Dispute Impact Calculator</title>
 
-  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --primary-blue: #0b3c5d;   /* darker blue */
-      --bg-light: #f6f9fc;
-      --text-dark: #0f172a;
-      --muted: #6b7280;
-      --danger: #c1121f;         /* red for money */
-      --card-bg: #ffffff;
-      --border: #e5e7eb;
-    }
-
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-light);
-      color: var(--text-dark);
       margin: 0;
-      padding: 40px 20px;
+      font-family: Inter, sans-serif;
     }
 
-    .container {
-      max-width: 900px;
-      margin: auto;
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(180deg, #163fa3 0%, #0a2b6b 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      box-sizing: border-box;
+    }
+
+    .content {
+      max-width: 1100px;
+      width: 100%;
+      text-align: center;
     }
 
     h1 {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--primary-blue);
+      font-size: 44px;
       margin-bottom: 10px;
     }
 
-    h2 {
-      font-size: 22px;
-      font-weight: 600;
-      color: var(--primary-blue);
-      margin-bottom: 6px;
-    }
-
     p {
-      font-size: 14px;
-      color: var(--muted);
-      margin-top: 0;
+      font-size: 20px;
+      opacity: 0.9;
+      margin-bottom: 40px;
     }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 24px;
-      margin-top: 24px;
+    .inputs {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
-    label {
-      font-size: 14px;
-      font-weight: 500;
-      display: block;
-      margin-top: 18px;
+    input {
+      padding: 18px 20px;
+      border-radius: 12px;
+      border: none;
+      font-size: 18px;
+      width: 220px;
     }
 
-    input[type=number] {
-      width: 100%;
-      padding: 10px;
-      font-size: 14px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      margin-top: 6px;
+    button {
+      padding: 18px 28px;
+      border-radius: 14px;
+      border: none;
+      font-size: 18px;
+      font-weight: 600;
+      background: #3b6df6;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #315fd6;
     }
 
     .result {
-      margin-top: 20px;
-      font-size: 20px;
+      font-size: 36px;
       font-weight: 700;
-      color: var(--danger);
+      margin-bottom: 30px;
     }
 
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 40px 0;
+    .money {
+      color: #ff4d4f;
     }
 
-    .disclaimer {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 30px;
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>Delivery Dispute Impact Calculator</h1>
-    <p>Quantifying revenue leakage and manual labour cost from delivery disputes.</p>
 
-    <!-- CALCULATOR 1 -->
-    <div class="card">
-      <h2>1. Recoverable Revenue Being Lost</h2>
-      <p>Shows money currently leaking due to disputed delivery orders.</p>
+<!-- INPUT STATE -->
+<div class="hero" id="inputState">
+  <div class="content">
+    <h1>See How Much You’re Losing to Delivery Disputes</h1>
+    <p>Enter your details to estimate recoverable revenue and wasted labour.</p>
 
-      <label>Orders per day</label>
-      <input type="number" id="ordersPerDay" value="500" min="1">
-
-      <label>Average order value (£)</label>
-      <input type="number" id="aov" value="25" min="1">
-
-      <div class="result" id="revenueLossResult"></div>
+    <div class="inputs">
+      <input id="orders" type="number" placeholder="Orders per day">
+      <input id="aov" type="number" placeholder="Avg order value (£)">
+      <button onclick="calculate()">Calculate impact</button>
     </div>
-
-    <div class="divider"></div>
-
-    <!-- CALCULATOR 2 -->
-    <div class="card">
-      <h2>2. Manual Labour Cost</h2>
-      <p>Shows the operational cost of checking orders and handling disputes manually.</p>
-
-      <div class="result" id="labourCostResult"></div>
-    </div>
-
-    <p class="disclaimer">
-      Estimates are directional and based on stated assumptions. Actual results vary by operation and platform.
-    </p>
   </div>
+</div>
 
-  <script>
-    function calculate() {
-      const ordersPerDay = Number(document.getElementById("ordersPerDay").value);
-      const aov = Number(document.getElementById("aov").value);
+<!-- RESULT STATE -->
+<div class="hero hidden" id="resultState">
+  <div class="content">
+    <div class="result">
+      You’re losing approximately
+      <span class="money" id="resultValue"></span>
+      per year.
+    </div>
 
-      const DAYS = 365;
-      const DISPUTE_RATE = 0.045;
-      const COMMISSION = 0.30;
+    <button onclick="reset()">Calculate again</button>
+  </div>
+</div>
 
-      // Wage assumptions
-      const FULLY_LOADED_WAGE = 14.50; // £ per hour, UK min wage + NI + pension
+<script>
+  function calculate() {
+    const orders = Number(document.getElementById("orders").value);
+    const aov = Number(document.getElementById("aov").value);
 
-      // Time assumptions
-      const CHECK_SECONDS = 5;
-      const DISPUTE_MINUTES = 5;
+    const DAYS = 365;
+    const DISPUTE_RATE = 0.045;
+    const COMMISSION = 0.30;
 
-      // ---- CALCULATOR 1: REVENUE LOSS ----
-      const annualOrders = ordersPerDay * DAYS;
-      const disputedOrders = annualOrders * DISPUTE_RATE;
+    const disputedOrders = orders * DAYS * DISPUTE_RATE;
+    const refunded = disputedOrders * aov;
+    const totalLoss = refunded + (refunded * COMMISSION);
 
-      const refundedValue = disputedOrders * aov;
-      const commissionCost = refundedValue * COMMISSION;
+    document.getElementById("resultValue").innerText =
+      "£" + totalLoss.toFixed(0);
 
-      const totalRecoverableLoss = refundedValue + commissionCost;
+    document.getElementById("inputState").classList.add("hidden");
+    document.getElementById("resultState").classList.remove("hidden");
+  }
 
-      document.getElementById("revenueLossResult").innerText =
-        `£${totalRecoverableLoss.toFixed(0)} lost per year`;
+  function reset() {
+    document.getElementById("resultState").classList.add("hidden");
+    document.getElementById("inputState").classList.remove("hidden");
+  }
+</script>
 
-      // ---- CALCULATOR 2: LABOUR COST ----
-      const orderCheckHours =
-        (annualOrders * CHECK_SECONDS) / 3600;
-
-      const disputeHandlingHours =
-        (disputedOrders * DISPUTE_MINUTES) / 60;
-
-      const totalLabourHours =
-        orderCheckHours + disputeHandlingHours;
-
-      const annualLabourCost =
-        totalLabourHours * FULLY_LOADED_WAGE;
-
-      document.getElementById("labourCostResult").innerText =
-        `£${annualLabourCost.toFixed(0)} per year in manual labour`;
-    }
-
-    document.querySelectorAll("input").forEach(input => {
-      input.addEventListener("input", calculate);
-    });
-
-    calculate();
-  </script>
 </body>
 </html>
