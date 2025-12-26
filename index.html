@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Delivery Dispute Impact Calculator</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-blue: #0b3c5d;   /* darker blue */
+      --bg-light: #f6f9fc;
+      --text-dark: #0f172a;
+      --muted: #6b7280;
+      --danger: #c1121f;         /* red for money */
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--primary-blue);
+      margin-bottom: 6px;
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 0;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-top: 24px;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 500;
+      display: block;
+      margin-top: 18px;
+    }
+
+    input[type=number] {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      margin-top: 6px;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--danger);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 40px 0;
+    }
+
+    .disclaimer {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Delivery Dispute Impact Calculator</h1>
+    <p>Quantifying revenue leakage and manual labour cost from delivery disputes.</p>
+
+    <!-- CALCULATOR 1 -->
+    <div class="card">
+      <h2>1. Recoverable Revenue Being Lost</h2>
+      <p>Shows money currently leaking due to disputed delivery orders.</p>
+
+      <label>Orders per day</label>
+      <input type="number" id="ordersPerDay" value="500" min="1">
+
+      <label>Average order value (£)</label>
+      <input type="number" id="aov" value="25" min="1">
+
+      <div class="result" id="revenueLossResult"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- CALCULATOR 2 -->
+    <div class="card">
+      <h2>2. Manual Labour Cost</h2>
+      <p>Shows the operational cost of checking orders and handling disputes manually.</p>
+
+      <div class="result" id="labourCostResult"></div>
+    </div>
+
+    <p class="disclaimer">
+      Estimates are directional and based on stated assumptions. Actual results vary by operation and platform.
+    </p>
+  </div>
+
+  <script>
+    function calculate() {
+      const ordersPerDay = Number(document.getElementById("ordersPerDay").value);
+      const aov = Number(document.getElementById("aov").value);
+
+      const DAYS = 365;
+      const DISPUTE_RATE = 0.045;
+      const COMMISSION = 0.30;
+
+      // Wage assumptions
+      const FULLY_LOADED_WAGE = 14.50; // £ per hour, UK min wage + NI + pension
+
+      // Time assumptions
+      const CHECK_SECONDS = 5;
+      const DISPUTE_MINUTES = 5;
+
+      // ---- CALCULATOR 1: REVENUE LOSS ----
+      const annualOrders = ordersPerDay * DAYS;
+      const disputedOrders = annualOrders * DISPUTE_RATE;
+
+      const refundedValue = disputedOrders * aov;
+      const commissionCost = refundedValue * COMMISSION;
+
+      const totalRecoverableLoss = refundedValue + commissionCost;
+
+      document.getElementById("revenueLossResult").innerText =
+        `£${totalRecoverableLoss.toFixed(0)} lost per year`;
+
+      // ---- CALCULATOR 2: LABOUR COST ----
+      const orderCheckHours =
+        (annualOrders * CHECK_SECONDS) / 3600;
+
+      const disputeHandlingHours =
+        (disputedOrders * DISPUTE_MINUTES) / 60;
+
+      const totalLabourHours =
+        orderCheckHours + disputeHandlingHours;
+
+      const annualLabourCost =
+        totalLabourHours * FULLY_LOADED_WAGE;
+
+      document.getElementById("labourCostResult").innerText =
+        `£${annualLabourCost.toFixed(0)} per year in manual labour`;
+    }
+
+    document.querySelectorAll("input").forEach(input => {
+      input.addEventListener("input", calculate);
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
