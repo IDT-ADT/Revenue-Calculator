@@ -112,21 +112,16 @@
       font-weight: 700;
     }
 
+    .money-green {
+      color: #22c55e;
+      font-weight: 700;
+    }
+
     .recovery {
       margin-top: 70px;
       max-width: 820px;
       margin-left: auto;
       margin-right: auto;
-    }
-
-    .recovery p {
-      font-size: 20px;
-      opacity: 0.9;
-      margin-bottom: 28px;
-    }
-
-    .highlight {
-      font-weight: 700;
     }
 
     .disclaimer {
@@ -182,16 +177,16 @@
     <!-- CALCULATE AGAIN -->
     <button class="secondary" onclick="reset()">Calculate again</button>
 
-    <!-- RECOVERY (NO £ NUMBERS) -->
+    <!-- RECOVERY -->
     <div class="recovery">
       <div class="result-text">
         How much of this loss can actually be recovered?
       </div>
 
-      <p>
-        Up to <span class="highlight">90%</span> of disputed losses can typically be recovered
-        with <span class="highlight">our automated dispute management</span>.
-      </p>
+      <div class="result-text">
+        Up to <span class="money-green">90%</span> of disputed losses can typically be recovered
+        with <strong>our Automated Dispute Management</strong>.
+      </div>
 
       <a href="https://2bv4o0.share-eu1.hsforms.com/2Qx1AGjvpRbGlg81NbZSLzw"
          target="_blank"
@@ -215,7 +210,7 @@
     if (!totalOrdersPerDay || !aov) return;
 
     const DAYS = 365;
-    const DISPUTE_RATE = 0.045;
+    const DISPUTE_RATE = 0.040;
     const COMMISSION = 0.30;
 
     const annualOrders = totalOrdersPerDay * DAYS;
@@ -244,3 +239,4 @@
 
 </body>
 </html>
+
