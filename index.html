@@ -7,7 +7,7 @@
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     body {
@@ -32,11 +32,11 @@
       width: 100%;
     }
 
-    h1  {
-  font-size: 46px;
-  font-weight: 800;
-  margin-bottom: 12px;
-}
+    h1 {
+      font-size: 46px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
 
     .sub {
       font-size: 20px;
@@ -94,7 +94,7 @@
     .result-text {
       font-size: 34px;
       font-weight: 600;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .money {
@@ -102,10 +102,29 @@
       font-weight: 700;
     }
 
+    .recovery {
+      margin-top: 40px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .recovery h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .recovery p {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 24px;
+    }
+
     .secondary {
       background: transparent;
-      border: 2px solid rgba(255,255,255,0.3);
-      margin-top: 20px;
+      border: 2px solid rgba(255,255,255,0.35);
+      margin-top: 10px;
     }
 
     .secondary:hover {
@@ -125,7 +144,7 @@
 <!-- INPUT STATE -->
 <div class="hero" id="inputState">
   <div class="content">
-    <h1>What Delivery Disputes Are Really Costing your Restaurants</h1>
+    <h1>What Delivery Disputes Are Really Costing your Business</h1>
     <div class="sub">Tailored to your order volume and average order value.</div>
 
     <div class="inputs">
@@ -162,11 +181,28 @@
       per year.
     </div>
 
-    <button class="secondary" onclick="reset()">Calculate again</button>
+    <!-- RECOVERY CONTINUATION -->
+    <div class="recovery">
+      <h2>How much of this loss can actually be recovered?</h2>
+      <p>
+        Up to <span class="money" id="recoverableAmount"></span> per year of this loss
+        can typically be recovered with our automated dispute management.
+      </p>
+
+      <a href="https://2bv4o0.share-eu1.hsforms.com/2Qx1AGjvpRbGlg81NbZSLzw"
+         target="_blank"
+         style="text-decoration:none;">
+        <button class="secondary">Get a free recovery audit</button>
+      </a>
+    </div>
 
     <div class="disclaimer">
       Estimates are directional and based on stated assumptions. Actual results vary by operation and platform.
     </div>
+
+    <button class="secondary" style="margin-top:30px;" onclick="reset()">
+      Calculate again
+    </button>
   </div>
 </div>
 
@@ -181,30 +217,25 @@
     const DAYS = 365;
     const DISPUTE_RATE = 0.040;
     const COMMISSION = 0.30;
+    const RECOVERY_RATE = 0.90;
 
-    // Orders per outlet (used explicitly)
-    const ordersPerOutletPerDay = totalOrdersPerDay / outlets;
+    const annualOrders = totalOrdersPerDay * DAYS;
+    const disputedOrders = annualOrders * DISPUTE_RATE;
 
-    const annualOrders =
-      ordersPerOutletPerDay * outlets * DAYS;
+    const refundedValue = disputedOrders * aov;
+    const totalLoss = refundedValue + (refundedValue * COMMISSION);
 
-    const disputedOrders =
-      annualOrders * DISPUTE_RATE;
-
-    const refundedValue =
-      disputedOrders * aov;
-
-    const totalLoss =
-      refundedValue + (refundedValue * COMMISSION);
-
-    const monthlyLoss =
-      totalLoss / 12;
+    const monthlyLoss = totalLoss / 12;
+    const recoverableAnnual = totalLoss * RECOVERY_RATE;
 
     document.getElementById("monthlyLoss").innerText =
       "£" + monthlyLoss.toFixed(0);
 
     document.getElementById("yearlyLoss").innerText =
       "£" + totalLoss.toFixed(0);
+
+    document.getElementById("recoverableAmount").innerText =
+      "£" + recoverableAnnual.toFixed(0);
 
     document.getElementById("inputState").classList.add("hidden");
     document.getElementById("resultState").classList.remove("hidden");
