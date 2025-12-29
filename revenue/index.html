@@ -1,1 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Delivery Dispute Cost Calculator</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, sans-serif;
+    }
+
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(180deg, #143a9c 0%, #0a255c 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .content {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 46px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .sub {
+      font-size: 20px;
+      opacity: 0.9;
+      margin-bottom: 48px;
+    }
+
+    .inputs {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .field label {
+      font-size: 14px;
+      margin-bottom: 6px;
+      opacity: 0.9;
+    }
+
+    input {
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: none;
+      font-size: 18px;
+      width: 220px;
+    }
+
+    button {
+      padding: 18px 30px;
+      border-radius: 16px;
+      border: none;
+      font-size: 18px;
+      font-weight: 600;
+      background: #3f6df6;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #345ed8;
+    }
+
+    .secondary {
+      background: transparent;
+      border: 2px solid rgba(255,255,255,0.35);
+      margin-top: 24px;
+    }
+
+    .secondary:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .result-text {
+      font-size: 34px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      line-height: 1.3;
+    }
+
+    .money {
+      color: #ff4d4f;
+      font-weight: 700;
+    }
+
+    .money-green {
+      color: #22c55e;
+      font-weight: 700;
+    }
+
+    .recovery {
+      margin-top: 70px;
+      max-width: 820px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .disclaimer {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- INPUT STATE -->
+<div class="hero" id="inputState">
+  <div class="content">
+    <h1>What Delivery Disputes Are Really Costing your Business</h1>
+    <div class="sub">Tailored to your order volume and average order value.</div>
+
+    <div class="inputs">
+      <div class="field">
+        <label>Number of outlets</label>
+        <input id="outlets" type="number" min="1" placeholder="e.g. 10">
+      </div>
+
+      <div class="field">
+        <label>Total daily orders (all outlets)</label>
+        <input id="orders" type="number" min="1" placeholder="e.g. 500">
+      </div>
+
+      <div class="field">
+        <label>Average order value (£)</label>
+        <input id="aov" type="number" min="1" placeholder="e.g. 25">
+      </div>
+
+      <button onclick="calculate()">Calculate cost</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT STATE -->
+<div class="hero hidden" id="resultState">
+  <div class="content">
+
+    <!-- LOSS -->
+    <div class="result-text">
+      You’re losing approximately
+      <span class="money" id="monthlyLoss"></span>
+      per month, which equates to
+      <span class="money" id="yearlyLoss"></span>
+      per year.
+    </div>
+
+    <!-- CALCULATE AGAIN -->
+    <button class="secondary" onclick="reset()">Calculate again</button>
+
+    <!-- RECOVERY -->
+    <div class="recovery">
+      <div class="result-text">
+        How much of this loss can actually be recovered?
+      </div>
+
+      <div class="result-text">
+        Up to <span class="money-green">90%</span> of disputed losses can typically be recovered
+        with <strong>our Automated Dispute Management</strong>.
+      </div>
+
+      <a href="https://2bv4o0.share-eu1.hsforms.com/2Qx1AGjvpRbGlg81NbZSLzw"
+         target="_blank"
+         style="text-decoration:none;">
+        <button class="secondary">Get a free recovery audit</button>
+      </a>
+    </div>
+
+    <div class="disclaimer">
+      Estimates are directional and based on stated assumptions. Actual results vary by operation and platform.
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function calculate() {
+    const totalOrdersPerDay = Number(document.getElementById("orders").value);
+    const aov = Number(document.getElementById("aov").value);
+
+    if (!totalOrdersPerDay || !aov) return;
+
+    const DAYS = 365;
+    const DISPUTE_RATE = 0.040;
+    const COMMISSION = 0.30;
+
+    const annualOrders = totalOrdersPerDay * DAYS;
+    const disputedOrders = annualOrders * DISPUTE_RATE;
+
+    const refundedValue = disputedOrders * aov;
+    const totalLoss = refundedValue + (refundedValue * COMMISSION);
+
+    const monthlyLoss = totalLoss / 12;
+
+    document.getElementById("monthlyLoss").innerText =
+      "£" + monthlyLoss.toFixed(0);
+
+    document.getElementById("yearlyLoss").innerText =
+      "£" + totalLoss.toFixed(0);
+
+    document.getElementById("inputState").classList.add("hidden");
+    document.getElementById("resultState").classList.remove("hidden");
+  }
+
+  function reset() {
+    document.getElementById("resultState").classList.add("hidden");
+    document.getElementById("inputState").classList.remove("hidden");
+  }
+</script>
+
+</body>
+</html>
 
