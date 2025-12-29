@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Manual Dispute Handling Cost Calculator</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, sans-serif;
+    }
+
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(180deg, #143a9c 0%, #0a255c 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .content {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 46px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .sub {
+      font-size: 20px;
+      opacity: 0.9;
+      margin-bottom: 48px;
+    }
+
+    .inputs {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .field label {
+      font-size: 14px;
+      margin-bottom: 6px;
+      opacity: 0.9;
+    }
+
+    input[type="number"] {
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: none;
+      font-size: 18px;
+      width: 220px;
+    }
+
+    button {
+      padding: 18px 30px;
+      border-radius: 16px;
+      border: none;
+      font-size: 18px;
+      font-weight: 600;
+      background: #3f6df6;
+      color: white;
+      cursor: pointer;
+      margin-top: 36px;
+    }
+
+    button:hover {
+      background: #345ed8;
+    }
+
+    .secondary {
+      background: transparent;
+      border: 2px solid rgba(255,255,255,0.35);
+      margin-top: 24px;
+    }
+
+    .secondary:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .result-text {
+      font-size: 34px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      line-height: 1.3;
+    }
+
+    .money {
+      color: #ff4d4f;
+      font-weight: 700;
+    }
+
+    /* PLATFORM LOGOS */
+    .platforms {
+      margin-top: 36px;
+      text-align: center;
+    }
+
+    .platforms-title {
+      font-size: 14px;
+      opacity: 0.85;
+      margin-bottom: 14px;
+    }
+
+    .platform-list {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .platform-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .platform-card img {
+      height: 28px;
+    }
+
+    .platform-card input {
+      display: none;
+    }
+
+    .platform-card:hover {
+      border-color: rgba(0,0,0,0.15);
+    }
+
+    .platform-card:has(input:checked) {
+      border-color: #22c55e;
+      background: #f0fdf4;
+    }
+
+    .context {
+      font-size: 14px;
+      opacity: 0.75;
+      margin-top: 18px;
+    }
+
+    .disclaimer {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- INPUT STATE -->
+<div class="hero" id="inputState">
+  <div class="content">
+    <h1>What manual dispute handling is costing your restaurants</h1>
+    <div class="sub">Based on your order volume and dispute activity.</div>
+
+    <div class="inputs">
+      <div class="field">
+        <label>Number of orders per day</label>
+        <input id="ordersPerDay" type="number" min="1" placeholder="e.g. 500">
+      </div>
+
+      <div class="field">
+        <label>Disputed orders per day</label>
+        <input id="disputesPerDay" type="number" min="0" placeholder="e.g. 20">
+      </div>
+    </div>
+
+    <div class="platforms">
+      <div class="platforms-title">
+        Delivery platforms used (optional)
+      </div>
+
+      <div class="platform-list">
+        <label class="platform-card">
+          <input type="checkbox">
+          <img src="..assets/logos/uber-eats.png" alt="Uber Eats">
+        </label>
+
+        <label class="platform-card">
+          <input type="checkbox">
+          <img src="..assets/logos/deliveroo.png" alt="Deliveroo">
+        </label>
+
+        <label class="platform-card">
+          <input type="checkbox">
+          <img src="..assets/logos/just-eat.png" alt="Just Eat">
+        </label>
+      </div>
+    </div>
+
+    <button onclick="calculate()">Calculate cost</button>
+  </div>
+</div>
+
+<!-- RESULT STATE -->
+<div class="hero hidden" id="resultState">
+  <div class="content">
+
+    <div class="result-text">
+      Manual dispute handling is costing you approximately
+      <span class="money" id="monthlyCost"></span>
+      per month, which equates to
+      <span class="money" id="yearlyCost"></span>
+      per year.
+    </div>
+
+    <div class="result-text">
+      This requires approximately
+      <span class="money" id="annualHours"></span>
+      hours of manual work per year.
+    </div>
+
+    <div class="context">
+      Manual dispute handling typically succeeds around <strong>60%</strong> of the time,
+      regardless of the labour required.
+    </div>
+
+    <div class="context">
+      Based on typical dispute handling across the delivery platforms you selected.
+    </div>
+
+    <a href="https://2bv4o0.share-eu1.hsforms.com/2Qx1AGjvpRbGlg81NbZSLzw"
+       target="_blank"
+       style="text-decoration:none;">
+      <button class="secondary">Get a FREE recovery audit</button>
+    </a>
+
+    <div class="disclaimer">
+      Estimates are directional and based on stated assumptions. Actual results vary by operation and platform.
+    </div>
+
+    <button class="secondary" onclick="reset()">Calculate again</button>
+
+  </div>
+</div>
+
+<script>
+  function calculate() {
+    const ordersPerDay = Number(document.getElementById("ordersPerDay").value);
+    const disputesPerDay = Number(document.getElementById("disputesPerDay").value);
+
+    if (!ordersPerDay) return;
+
+    const DAYS = 365;
+
+    const IMAGE_SECONDS_PER_ORDER = 4;
+    const DISPUTE_MINUTES = 5;
+    const HOURLY_COST = 14.50;
+
+    const annualOrders = ordersPerDay * DAYS;
+    const annualDisputes = disputesPerDay * DAYS;
+
+    const imageHours = (annualOrders * IMAGE_SECONDS_PER_ORDER) / 3600;
+    const disputeHours = (annualDisputes * DISPUTE_MINUTES) / 60;
+
+    const totalHours = imageHours + disputeHours;
+
+    const annualCost = totalHours * HOURLY_COST;
+    const monthlyCost = annualCost / 12;
+
+    document.getElementById("monthlyCost").innerText = "£" + monthlyCost.toFixed(0);
+    document.getElementById("yearlyCost").innerText = "£" + annualCost.toFixed(0);
+    document.getElementById("annualHours").innerText = totalHours.toFixed(0);
+
+    document.getElementById("inputState").classList.add("hidden");
+    document.getElementById("resultState").classList.remove("hidden");
+  }
+
+  function reset() {
+    document.getElementById("resultState").classList.add("hidden");
+    document.getElementById("inputState").classList.remove("hidden");
+  }
+</script>
+
+</body>
+</html>
+
